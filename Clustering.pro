@@ -5,7 +5,11 @@ CONFIG -= qt
 
 SOURCES += \
         main.cpp \
-    clusterclass.cpp
+    clusterclass.cpp \
+    k_means.cpp \
+    minspanningtree.cpp
 
 HEADERS += \
-    clusterclass.h
+    clusterclass.h \
+    k_means.h \
+    minspanningtree.h
