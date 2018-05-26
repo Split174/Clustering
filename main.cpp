@@ -20,16 +20,23 @@ int main()
     for(int i=0; i<n; i++)
         for (int j=0; j<m; j++)
             mat >> GeneralCluster[i][j];
-    MinSpanningTree MST;
-    MST.General_MST(GeneralCluster);
-//    cout << GeneralCluster<< endl;
-//    K_Means KM;
-//    vector<ClusterClass> Test = KM.General_K_means(GeneralCluster, k);
 
-//    for (size_t i = 0; i < Test.size(); i++)
-//    {
-//        cout << "Cluster № " << i << endl;
-//        cout << Test[i] << endl;
-//    }
+    MinSpanningTree MST;
+    vector<ClusterClass> MSTClusters = MST.MST_Method(GeneralCluster);
+    cout << "MST:" << endl;
+    for (size_t i = 0; i < MSTClusters.size(); i++)
+    {
+        cout << "Cluster № " << i << endl;
+        cout << MSTClusters[i] << endl;
+    }
+
+    K_Means KM;
+    vector<ClusterClass> KMeansClusters = KM.General_K_means(GeneralCluster, k);
+    cout << "KMeans:" << endl;
+    for (size_t i = 0; i < KMeansClusters.size(); i++)
+    {
+        cout << "Cluster № " << i << endl;
+        cout << KMeansClusters[i] << endl;
+    }
     return 0;
 }

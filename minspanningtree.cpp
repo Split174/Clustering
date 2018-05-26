@@ -90,10 +90,10 @@ void MinSpanningTree::DeleteBigEdge(ClusterClass& C, vector<int> Neighbor, doubl
     }
 }
 
-void MinSpanningTree::ClusterMinimalTree(ClusterClass C)
+vector<int> MinSpanningTree::AmountComponentsAndAffiliationElements(ClusterClass C, int& AmountCluster)
 {
     vector<vector<double>> a = C.Distance;
-    int n = C.Distance.size(), cur = 0;
+    int n = C.Distance.size();
     vector<int> was(n, -1);
     queue<int> q;
     for (int i = 0; i < n; i++)
@@ -107,33 +107,48 @@ void MinSpanningTree::ClusterMinimalTree(ClusterClass C)
               q.pop();
               if (was[v] != -1)
                  continue;
-              was[v] = cur;
+              was[v] = AmountCluster;
               for (int j = 0; j < n; j++)
                   if (a[v][j] != 0.0 && was[j] == -1)
                      q.push(j);
         }
-        cur++;
+        AmountCluster++;
     }
-    for (size_t i = 0; i < was.size(); i++)
-        cout << "Object : " << i << " in " << was[i] << " cluster" << endl;
+    return was;
 }
 
-void MinSpanningTree::General_MST(ClusterClass Cl)
+vector<ClusterClass> MinSpanningTree::AppendElementsClusters(vector<int> ClusterAffiliation,
+                                                             ClusterClass Source, int AmountCluster)
 {
+    vector<ClusterClass> Res(AmountCluster);
+    for (size_t i = 0; i < ClusterAffiliation.size(); i++)
+        Res[ClusterAffiliation[i]].Elements.push_back(Source.Elements[i]);
+    return Res;
+}
+
+
+
+vector<ClusterClass> MinSpanningTree::MST_Method(ClusterClass Cl)
+{
+    vector<ClusterClass> ClusterSet;
     Cl.CalcDistance(); // высчитывание матрицы дистанции и вывод её для дебага( оно же матрица смежности для графа )
     double R = this->getR(Cl);
     cout << "R = " << R << endl; // высчитывание потенциального "расстояния для удаления"
 
-    for (size_t i = 0; i < Cl.Distance.size(); i++)
-    {
-        for (size_t j = 0; j < Cl.Distance[i].size(); j++)
-            cout << Cl.Distance[i][j] << "\t";
-        cout << endl;
-    }
+//    for (size_t i = 0; i < Cl.Distance.size(); i++)
+//    {
+//        for (size_t j = 0; j < Cl.Distance[i].size(); j++)
+//            cout << Cl.Distance[i][j] << "\t";
+//        cout << endl;
+//    }
 
     vector<int> N;
-
-    N = this->GetMinimalTree(Cl); // передаём по ссылке для дальнейшего использования
+    vector<int> ClusterAffiliation;
+    int AmountCluster = 0;
+    N = this->GetMinimalTree(Cl);
     this->DeleteBigEdge(Cl, N, R);
-    this->ClusterMinimalTree(Cl);
+    ClusterAffiliation = this->AmountComponentsAndAffiliationElements(Cl, AmountCluster);
+    ClusterSet = this->AppendElementsClusters(ClusterAffiliation, Cl, AmountCluster);
+
+    return ClusterSet;
 }
