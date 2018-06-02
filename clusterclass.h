@@ -8,39 +8,41 @@
 #include <cstdlib>
 #include <queue>
 #include "k_means.h"
-
-//#include "myrand.h"
+#include "minspanningtree.h"
+//#include "clusteringaccuracy.h"
 
 
 using namespace std;
-// TODO надо что бы элементы кластера были составные, а не просто вектор double
-
 class K_Means;
 class MinSpanningTree;
 
 class ClusterClass
 {
 private:
-    //int num; // номер кластера ( читай имя)
-    vector<vector<double>> Distance; // расстояние элемента i до элемента j
+    vector<vector<double>> Distance;
     vector<double> Centroid;
-    vector<vector<double>> Elements; // элементы содержащиеся в кластере
+    vector<vector<double>> Elements;
 public:
     friend class K_Means;
     friend class MinSpanningTree;
+    friend double ClusteringAccuracy(vector<ClusterClass>);
+    friend double AverageDistanceBetweenClusters(vector<ClusterClass> data);
+    friend double AverageDistanceInsideAllCluster(vector<ClusterClass> data);
 
     void CalcDistance();
     friend void MoveElement(ClusterClass &C1, ClusterClass &C2, int indexElement);
 
     ClusterClass(); //
     ClusterClass(int NumberOfObject, int NumberOfVariables); // ну тут из названия
-
+    double AverageDistanceInsideCluster();
     void RecalculateCentroids();
 
     vector<double>&  operator[](int row);
     friend ostream& operator <<(ostream &os, ClusterClass &C);
     friend double DistanceFormObjToObj(vector<double> Obj1, vector<double> Obj2);
     friend int main();
+    friend void  DrawCluster(ClusterClass Source, vector<char> Color, char*& dataPoint);
+    friend void  CreatePng(vector<ClusterClass> dataClusters, string file);
 };
 
 #endif // CLUSTERCLASS_H

@@ -7,9 +7,13 @@ SOURCES += \
         main.cpp \
     clusterclass.cpp \
     k_means.cpp \
-    minspanningtree.cpp
+    minspanningtree.cpp \
+    createclustermap.cpp
 
 HEADERS += \
     clusterclass.h \
     k_means.h \
-    minspanningtree.h
+    minspanningtree.h \
+    clusteringaccuracy.h \
+    stb_image_write.h \
+    generatepoint.h

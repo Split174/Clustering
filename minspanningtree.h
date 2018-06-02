@@ -11,12 +11,12 @@ class MinSpanningTree
 {
 public:
     MinSpanningTree();
-    vector<int> GetMinimalTree(ClusterClass C);
-    double getR(ClusterClass C);
-    void DeleteBigEdge(ClusterClass &C, vector<int> Neighbor, double R);
-    vector<int> AmountComponentsAndAffiliationElements(ClusterClass C, int& AmountCluster);
+    vector<int> GetMinimalTree(vector<vector<double>> Distance);
+    double getR(vector<vector<double>> Distance);
+    void DeleteBigEdgeInTree(vector<vector<double> >& Distance, vector<int> Neighbor, double R);
+    vector<int> AmountComponentsAndAffiliationElements(vector<vector<double> > Distance, int& AmountCluster);
     vector<ClusterClass> AppendElementsClusters(vector<int> ClusterAffiliation, ClusterClass Source, int AmountCluster);
-    vector<ClusterClass> MST_Method(ClusterClass Cl);
+    vector<ClusterClass> MST_Method(ClusterClass dataElement);
 };
 
 #endif // MIMSPANNINGTREE_H

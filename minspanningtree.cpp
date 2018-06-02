@@ -5,9 +5,9 @@ MinSpanningTree::MinSpanningTree()
 
 }
 
-vector<int> MinSpanningTree::GetMinimalTree(ClusterClass C)
+vector<int> MinSpanningTree::GetMinimalTree(vector<vector<double>> Distance)
 {
-    int n = C.Distance.size();
+    int n = Distance.size();
     int INF = 1000000000;
 
     vector<bool> used (n);
@@ -29,13 +29,13 @@ vector<int> MinSpanningTree::GetMinimalTree(ClusterClass C)
         used[v] = true;
         if (sel_e[v] != -1)
         {
-            cout << v << " " << sel_e[v] << endl;
+            //cout << v << " " << sel_e[v] << endl;
             Res[v] = sel_e[v];
         }
 
         for (int to=0; to<n; ++to)
-            if (C.Distance[v][to] < min_e[to]) {
-                min_e[to] = C.Distance[v][to];
+            if (Distance[v][to] < min_e[to]) {
+                min_e[to] = Distance[v][to];
                 sel_e[to] = v;
             }
     }
@@ -43,57 +43,50 @@ vector<int> MinSpanningTree::GetMinimalTree(ClusterClass C)
     return Res;
 }
 
-double MinSpanningTree::getR(ClusterClass C)
+double MinSpanningTree::getR(vector<vector<double>> Distance)
 {
+    int AmountPoint = Distance.size();
     int k = 0;
     double res=0;
-    for (size_t i = 0; i<C.Distance.size(); i++)
-        for (size_t j = i; j<C.Distance[i].size(); j++)
+    for (size_t i = 0; i<Distance.size(); i++)
+        for (size_t j = i+ 1; j<Distance[i].size(); j++)
         {
             if (i == j)
                 continue;
-            res += C.Distance[i][j];
-            k++;
+            res += Distance[i][j];
         }
-    return (res/k)*0.5;
+    return (res/(AmountPoint*AmountPoint));
 }
 
-void MinSpanningTree::DeleteBigEdge(ClusterClass& C, vector<int> Neighbor, double R)
+void MinSpanningTree::DeleteBigEdgeInTree(vector<vector<double> >& Distance, vector<int> Neighbor, double R)
 {
     vector<vector<double>> tmp(Neighbor.size(), vector<double>(Neighbor.size()));
     for (size_t i = 0; i < Neighbor.size(); i++)
     {
         if (Neighbor[i] == -1)
             continue;
-        tmp[i][Neighbor[i]] = C.Distance[i][Neighbor[i]];
-        tmp[Neighbor[i]][i] = C.Distance[Neighbor[i]][i];
+        tmp[i][Neighbor[i]] = Distance[i][Neighbor[i]];
+        tmp[Neighbor[i]][i] = Distance[Neighbor[i]][i];
     }
 
-    C.Distance = tmp;
+    Distance = tmp;
 
     for (size_t i = 0; i < Neighbor.size(); i++)
     {
         if (Neighbor[i] == -1)
             continue;
-        if (C.Distance[i][Neighbor[i]] >= R )
+        if (Distance[i][Neighbor[i]] >= R )
         {
-            C.Distance[i][Neighbor[i]] = 0; // TODO оптимизацию плеееез бегает по всей матрице
-            C.Distance[Neighbor[i]][i] = 0;
+            Distance[i][Neighbor[i]] = 0; // TODO оптимизацию плеееез бегает по всей матрице
+            Distance[Neighbor[i]][i] = 0;
         }
-    }
-
-    for (size_t i = 0; i < C.Distance.size(); i++)
-    {
-        for (size_t j = 0; j < C.Distance[i].size(); j++)
-            cout << C.Distance[i][j] << "\t";
-        cout << endl;
     }
 }
 
-vector<int> MinSpanningTree::AmountComponentsAndAffiliationElements(ClusterClass C, int& AmountCluster)
+vector<int> MinSpanningTree::AmountComponentsAndAffiliationElements(vector<vector<double>> Distance, int& AmountCluster)
 {
-    vector<vector<double>> a = C.Distance;
-    int n = C.Distance.size();
+    vector<vector<double>> a = Distance;
+    int n = Distance.size();
     vector<int> was(n, -1);
     queue<int> q;
     for (int i = 0; i < n; i++)
@@ -126,29 +119,52 @@ vector<ClusterClass> MinSpanningTree::AppendElementsClusters(vector<int> Cluster
     return Res;
 }
 
+double GetDist(vector<vector<double>> Distance, vector<int> Neighbor)
+{
+    double Res = 0;
+    double max = -1;
+    for (size_t i = 0; i < Neighbor.size(); i++)
+    {
+        if (Neighbor[i] == -1)
+            continue;
+        if (Distance[i][Neighbor[i]] > max)
+            max = Distance[i][Neighbor[i]];
+        Res += Distance[i][Neighbor[i]];
+    }
+    return (Res/max);
+}
 
+double GetMaxDivideTwo(vector<vector<double>> Distance, vector<int> Neighbor)
+{
+    double max = -1;
+    for (size_t i = 0; i < Neighbor.size(); i++)
+    {
+        if (Neighbor[i] == -1)
+            continue;
+        if (Distance[i][Neighbor[i]] > max)
+            max = Distance[i][Neighbor[i]];
+    }
+    return (max/2);
+}
 
-vector<ClusterClass> MinSpanningTree::MST_Method(ClusterClass Cl)
+vector<ClusterClass> MinSpanningTree::MST_Method(ClusterClass dataElement)
 {
     vector<ClusterClass> ClusterSet;
-    Cl.CalcDistance(); // высчитывание матрицы дистанции и вывод её для дебага( оно же матрица смежности для графа )
-    double R = this->getR(Cl);
-    cout << "R = " << R << endl; // высчитывание потенциального "расстояния для удаления"
-
-//    for (size_t i = 0; i < Cl.Distance.size(); i++)
-//    {
-//        for (size_t j = 0; j < Cl.Distance[i].size(); j++)
-//            cout << Cl.Distance[i][j] << "\t";
-//        cout << endl;
-//    }
-
+    dataElement.CalcDistance(); // высчитывание матрицы дистанции и вывод её для дебага( оно же матрица смежности для графа )
+    vector<vector<double>> matrixDistance = dataElement.Distance; // фикс диструктивности алгоритма
+    double OptimalDistance = this->getR(matrixDistance);
+    cout << "OptimalDistance = " << OptimalDistance << endl;
     vector<int> N;
     vector<int> ClusterAffiliation;
     int AmountCluster = 0;
-    N = this->GetMinimalTree(Cl);
-    this->DeleteBigEdge(Cl, N, R);
-    ClusterAffiliation = this->AmountComponentsAndAffiliationElements(Cl, AmountCluster);
-    ClusterSet = this->AppendElementsClusters(ClusterAffiliation, Cl, AmountCluster);
-
+    N = this->GetMinimalTree(matrixDistance);
+    double Dist = GetDist(matrixDistance, N);
+    cout << "Dist =" << Dist << endl;
+    //Dist = abs(Dist - OptimalDistance);
+    double MaxDivideTwo = GetMaxDivideTwo(matrixDistance, N);
+    cout << "Max =" << MaxDivideTwo << endl;
+    this->DeleteBigEdgeInTree(matrixDistance, N, MaxDivideTwo);
+    ClusterAffiliation = this->AmountComponentsAndAffiliationElements(matrixDistance, AmountCluster);
+    ClusterSet = this->AppendElementsClusters(ClusterAffiliation, dataElement, AmountCluster);
     return ClusterSet;
 }

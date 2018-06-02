@@ -18,10 +18,6 @@ int K_Means::ClusterAffiliation(vector<double> Element, vector<ClusterClass> Cls
         }
         tmp=0;
     }
-//    cout << "touch Element :";
-//    for (size_t i = 0; i < Element.size(); i++)
-//        cout << Element[i] << " ";
-//    cout << endl;
     return indexMinCluster;
 }
 
@@ -32,8 +28,6 @@ vector<ClusterClass> K_Means::General_K_means(ClusterClass Cl, int sizeK)
     int index;
     for (size_t i = 0; i < Clusters.size(); i++)
         Clusters[i].Centroid = Cl.Elements[rand() % Cl.Elements.size()];
-//    Clusters[0].Centroid = Cl.Elements[0];
-//    Clusters[1].Centroid = Cl.Elements[3];
     while(true)
     {
         WTF++;
@@ -51,22 +45,6 @@ vector<ClusterClass> K_Means::General_K_means(ClusterClass Cl, int sizeK)
                 Clusters[i].Elements.pop_back();
         }
     }
-    //cout << "size Clu " << Clusters.size() << endl;
-//       while(WTF!=3)
-//    {
-//        for (size_t i = 0; i<Clusters.size(); i++)
-//            for (int j = 0; j < Clusters.Elements.size(); j++)
-//                {
-//                    index = ClusterAffiliation(Cl.Elements[i], Clusters);
-//                    if(index == i)
-//                        continue;
-//                    else
-//                        w
-//                }
-//        for (size_t i = 0; i<Clusters.size(); i++)
-//            Clusters[i].RecalculateCentroids();
-//        WTF++;
-//    }
     return Clusters;
 }
 

@@ -6,6 +6,8 @@ double DistanceFormObjToObj(vector<double> Obj1, vector<double> Obj2)
     for (size_t i = 0; i < Obj1.size(); i++)
         res += pow(Obj1[i] - Obj2[i], 2);
     res = sqrt(res);
+    if (res == 0)
+        res = 0.0000001; // костыль, на случай если есть элементы с одинаковыми параметрами
     return res;
 }
 
@@ -42,7 +44,7 @@ void ClusterClass::RecalculateCentroids() // пересчитывает цент
 {
     //cout << "RecalculateCentroids " << endl;
         int totalInCluster = 0;
-        vector<double> tmp(this->Centroid.size(), 0); // инициализируем вектор для дальнейшего его присваивания к центройде
+        vector<double> tmp(this->Elements[0].size(), 0); // инициализируем вектор для дальнейшего его присваивания к центройде
         // надо для пересчитывания центройды, ибо занулять текущую лень, проще переприсвоить
         for (size_t i = 0; i < this->Elements.size(); i++)
         {
@@ -82,4 +84,49 @@ ostream& operator <<(ostream &os, ClusterClass &C)
         os << endl;
     }
     return os;
+}
+
+double ClusterClass::AverageDistanceInsideCluster()
+{
+    size_t AmountElementsInCluster = this->Elements.size();
+    if (AmountElementsInCluster == 1) // иначе будет NAN
+        return 0;
+    double DistanceInsideCluster = 0;
+    int AmountSum = 0;
+    for (size_t i = 0; i < AmountElementsInCluster; i++)
+        for (size_t j = i+1; j < AmountElementsInCluster; j++)
+        {
+            DistanceInsideCluster += DistanceFormObjToObj(this->Elements[i], this->Elements[j]);
+            AmountSum++;
+        }
+    return (DistanceInsideCluster / AmountSum);
+}
+
+double AverageDistanceInsideAllCluster(vector<ClusterClass> data)
+{
+    size_t AmountCluster = data.size();
+    double Res = 0;
+    for (size_t i = 0; i < AmountCluster; i++)
+        Res += (data[i].AverageDistanceInsideCluster());
+    return ( Res / AmountCluster);
+}
+
+double AverageDistanceBetweenClusters(vector<ClusterClass> data)
+{
+    size_t AmountClusters = data.size();
+    double DistanceBetweenClusters = 0;
+    int AmountSum = 0;
+    for (size_t i = 0; i < AmountClusters; i++)
+        for (size_t j = i+1; j < AmountClusters; j++)
+        {
+            DistanceBetweenClusters += DistanceFormObjToObj(data[i].Centroid, data[j].Centroid);
+            AmountSum++;
+        }
+    return (DistanceBetweenClusters / (AmountSum));
+}
+
+double ClusteringAccuracy(vector<ClusterClass> data)
+{
+    //int AmountCluster = data.size();
+    return ((AverageDistanceInsideAllCluster(data)) / AverageDistanceBetweenClusters(data));
 }

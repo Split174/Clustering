@@ -1,6 +1,5 @@
 #include "clusterclass.h"
-#include "minspanningtree.h"
-
+#include <generatepoint.h>
 using namespace std;
 
 void MoveElement(ClusterClass &C1, ClusterClass &C2, int indexElement)
@@ -11,32 +10,51 @@ void MoveElement(ClusterClass &C1, ClusterClass &C2, int indexElement)
 
 int main()
 {
-    int n,m, k;
+    GeneratePoint(100, 2000);
+    int n,m, k=1;
     ifstream mat("in.txt");
+    ofstream Kmeansfile("kmeans.txt");
+    ofstream MSTfile("mst.txt");
     mat >> n;
     mat >> m;
-    mat >> k;
     ClusterClass GeneralCluster(n,m);
     for(int i=0; i<n; i++)
         for (int j=0; j<m; j++)
             mat >> GeneralCluster[i][j];
-
     MinSpanningTree MST;
     vector<ClusterClass> MSTClusters = MST.MST_Method(GeneralCluster);
-    cout << "MST:" << endl;
+    CreatePng(MSTClusters, "MST.png");
     for (size_t i = 0; i < MSTClusters.size(); i++)
     {
-        cout << "Cluster № " << i << endl;
-        cout << MSTClusters[i] << endl;
+        MSTfile << "Cluster № " << i << endl;
+        MSTClusters[i].RecalculateCentroids();
+        MSTfile << MSTClusters[i] << endl;
     }
+    MSTfile << "Q for MST = " << ClusteringAccuracy(MSTClusters) << endl;
+    cout << "MST finish" << endl;
+
 
     K_Means KM;
-    vector<ClusterClass> KMeansClusters = KM.General_K_means(GeneralCluster, k);
-    cout << "KMeans:" << endl;
+    double Q = 10;
+    vector<ClusterClass> KMeansClusters;
+    while(true)
+    {
+        k++;
+        cout << k << endl;
+        KMeansClusters = KM.General_K_means(GeneralCluster, k);
+        double tmp = ClusteringAccuracy(KMeansClusters);
+        if (tmp > Q || tmp < 0.3)
+            break;
+        else
+            Q = tmp;;
+    }
+    CreatePng(KMeansClusters, "Kmeans.png");
     for (size_t i = 0; i < KMeansClusters.size(); i++)
     {
-        cout << "Cluster № " << i << endl;
-        cout << KMeansClusters[i] << endl;
+        Kmeansfile << "Cluster № " << i << endl;
+        Kmeansfile << KMeansClusters[i] << endl;
     }
+    Kmeansfile << "Q for Kmeans = " << ClusteringAccuracy(KMeansClusters) << endl;
+    cout << "Kmeans finish" << endl;
     return 0;
 }
