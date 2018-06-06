@@ -27,7 +27,7 @@ void GenerateCenter(vector<Point>& Pcenter, int R)
 void GeneratePoint(int R, int AmountPoint)
 {
     srand( time(0) );
-    ofstream fout("in.txt");
+    ofstream fout("generate.txt");
     int AmountBundle = 2+ (rand() % 50);
     vector<Point> Pcenter(AmountBundle);
     GenerateCenter(Pcenter, R);

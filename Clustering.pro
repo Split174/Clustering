@@ -4,16 +4,14 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
-        main.cpp \
-    clusterclass.cpp \
-    k_means.cpp \
-    minspanningtree.cpp \
-    createclustermap.cpp
+        main.cpp
 
 HEADERS += \
-    clusterclass.h \
-    k_means.h \
-    minspanningtree.h \
-    clusteringaccuracy.h \
     stb_image_write.h \
-    generatepoint.h
+    generatepoint.h \
+    cluster.h \
+    minspanningtree.h \
+    createclustermap.h \
+    kmeans.h \
+    clusteringaccuracy.h \
+    generalfunc.h

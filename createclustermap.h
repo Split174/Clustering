@@ -1,4 +1,4 @@
-#include <clusterclass.h>
+#include <cluster.h>
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
 const int width = 800;
@@ -22,7 +22,7 @@ void SetPoint(char*& dataPoint, uint x, uint y, vector<char> Color, int sizePoin
         }
 }
 
-void DrawCluster(ClusterClass Source, vector<char> Color, char*& dataPoint)
+void DrawCluster(Cluster Source, vector<char> Color, char*& dataPoint)
 {
     size_t AmountElementCluster = Source.Elements.size();
     for (size_t i = 0; i < AmountElementCluster; i++)
@@ -31,7 +31,7 @@ void DrawCluster(ClusterClass Source, vector<char> Color, char*& dataPoint)
     }
 }
 
-void CreatePng(vector<ClusterClass> dataClusters, string file)
+void CreatePng(vector<Cluster> dataClusters, string file)
 {
     char * dataPoint = (char*) malloc(width*height*3);
     for (int i = 0; i < width*height*3; i++)
